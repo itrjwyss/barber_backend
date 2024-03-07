@@ -1,0 +1,83 @@
+List (GET)
+    endpoint: /service/list
+
+    recibe:
+        pues nada XD
+
+    retorna:
+    [
+        {
+            "id": 1,
+            "status": true,
+            "name": "Corte de pelo",
+            "description": null,
+            "price": 3.00
+        },
+         {
+            "id": 1,
+            "status": true,
+            "name": "Corte de pelo",
+            "description": null,
+            "price": 3.00
+        }
+    ]
+
+Find by id (GET)
+    endpoint: /service/find?<id>
+
+    Retorna:
+    {
+        "successful": true,
+        "message": "Servicio creado exitosamente."
+        "service": {
+            "id": 1,
+            "status": true,
+            "name": "Corte de pelo",
+            "description": null,
+            "price": 3.00
+        }
+    }
+    {
+        "successful": false,
+        "message": "Registro no encontrado.",
+        "service": null
+    }
+
+
+El create (POST)
+    recibe:
+    {
+        "name": "Corte de pelo",
+        "description": null,
+        "price": 3.00
+    }
+
+    retorna:
+    {
+        "successful": true,
+        "message": "Servicio creado exitosamente."
+    }
+    {
+        "successful": false,
+        "message": "El nombre del servicio que se desea crear ya existe."
+    }
+
+El update (UPDATE)
+    recibe:
+    {
+        "id": 1,
+        "status": true,
+        "name": "Corte de pelo",
+        "description": null,
+        "price": 3.00
+    }
+
+    retorna:
+    {
+        "successful": true,
+        "message": "Registro actualizado correctamente."
+    }
+    {
+        "successful": false,
+        "message": "Registro no encontrado para su edicion."
+    }
