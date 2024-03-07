@@ -36,7 +36,7 @@ public class CustomerController {
     }
 
     @GetMapping(path = {"/find", "/find/", "/find/{id}"})
-    public FindCustomerResponse findCustomer(
+    public FindCustomerResponse find(
         @PathVariable(name = "id", required = false) Long id
     ) {
         FindCustomerResponse response = new FindCustomerResponse();
@@ -57,7 +57,7 @@ public class CustomerController {
     }
 
     @PostMapping("/created")
-    public BaseResponse createCustomer(
+    public BaseResponse create(
         @RequestBody CreateCustomerRequest request
     ) {
         BaseResponse response = new BaseResponse();
@@ -80,7 +80,7 @@ public class CustomerController {
     }
 
     @PutMapping("/update")
-    public BaseResponse updateCustomer(
+    public BaseResponse update(
         @RequestBody CustomerData request
     ) {
         BaseResponse response = new BaseResponse();

@@ -36,7 +36,7 @@ public class ServiceController {
     }
 
     @GetMapping(path = { "/find", "/find/", "/find/{id}"})
-    public FindServiceResponse findService(
+    public FindServiceResponse find(
         @PathVariable(name = "id", required = false) Long id
     ) {
         FindServiceResponse response = new FindServiceResponse();
@@ -57,7 +57,7 @@ public class ServiceController {
     }
 
     @PostMapping("/create")
-    public BaseResponse createService(
+    public BaseResponse create(
         @RequestBody CreateServiceRequest request
     ) {
         BaseResponse response = new BaseResponse();
@@ -86,7 +86,7 @@ public class ServiceController {
     }
 
     @PutMapping("/update")
-    public BaseResponse updateService(
+    public BaseResponse update(
         @RequestBody ServiceData request
     ) {
         BaseResponse response = new BaseResponse();
