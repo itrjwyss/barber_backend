@@ -13,6 +13,7 @@ import meso.itrjwyss.barberia.data.appointment.AppointmentServiceData;
 import meso.itrjwyss.barberia.data.appointment.CreateAppointmentRequest;
 import meso.itrjwyss.barberia.data.appointment.DataAppointmentResponse;
 import meso.itrjwyss.barberia.data.appointment.FindAppointmentResponse;
+import meso.itrjwyss.barberia.data.appointment.UpdateAppointmentRequest;
 import meso.itrjwyss.barberia.entities.AppointmentEntity;
 import meso.itrjwyss.barberia.entities.AppointmentServiceEntity;
 import meso.itrjwyss.barberia.entities.BarberEntity;
@@ -80,8 +81,26 @@ public class AppointmentController {
                     servicesList.add(new AppointmentServiceData(service))
                 );
 
+                List<ListData> barbers =  new ArrayList<>();
+                barberService.findAll().forEach(barberEntity ->
+                    barbers.add(new ListData(barberEntity.getId(), barberEntity.getName()))
+                );
+
+                List<ListData> customers = new ArrayList<>();
+                customerService.findAll().forEach(customerEntity ->
+                    customers.add(new ListData(customerEntity.getId(), customerEntity.getName()))
+                );
+
+                List<ListData> services = new ArrayList<>();
+                serviceService.findAll().forEach(serviceEntity ->
+                    services.add(new ListData(serviceEntity.getId(), serviceEntity.getName()))
+                );
+
                 response.setSuccessful(true);
                 response.setAppointment(new AppointmentData(searchResult.get()));
+                response.setBarbers(barbers);
+                response.setCustomers(customers);
+                response.setServices(services);
                 response.setServiceList(servicesList);
             } else {
                 response.setMessage("Cita no encontrada.");
@@ -180,7 +199,7 @@ public class AppointmentController {
 
     @PutMapping("/update")
     public BaseResponse update(
-        @RequestBody AppointmentData request
+        @RequestBody UpdateAppointmentRequest request
     ) {
         BaseResponse response = new BaseResponse();
 
@@ -189,38 +208,45 @@ public class AppointmentController {
             if (findAppointment.isPresent()) {
                 AppointmentEntity appointmentEntity = findAppointment.get();
 
-                appointmentEntity.setDay(request.getDay());
-                appointmentEntity.setHourStart(request.getHourStart());
-                appointmentEntity.setHourEnd(request.getHourEnd());
-                appointmentEntity.setStatus(request.getStatus());
-                appointmentEntity.setUpdatedAt(new Date());
+                try {
+                    SimpleDateFormat formatDay = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat formatHour = new SimpleDateFormat("HH:mm");
 
-                boolean flag = true;
-                if (!request.getCustomerId().equals(appointmentEntity.getCustomer().getId())) {
-                    Optional<CustomerEntity> customerEntity = customerService.findById(request.getCustomerId());
-                    if (customerEntity.isPresent()) {
-                        appointmentEntity.setCustomer(customerEntity.get());
-                    } else {
-                        flag = false;
+                    appointmentEntity.setDay(formatDay.parse(request.getDay()));
+                    appointmentEntity.setHourStart(formatHour.parse(request.getHourStart()));
+                    appointmentEntity.setHourEnd(formatHour.parse(request.getHourEnd()));
+                    appointmentEntity.setStatus(request.getStatus());
+                    appointmentEntity.setUpdatedAt(new Date());
+
+                    boolean flag = true;
+                    if (!request.getCustomerId().equals(appointmentEntity.getCustomer().getId())) {
+                        Optional<CustomerEntity> customerEntity = customerService.findById(request.getCustomerId());
+                        if (customerEntity.isPresent()) {
+                            appointmentEntity.setCustomer(customerEntity.get());
+                        } else {
+                            flag = false;
+                        }
                     }
-                }
 
-                if (flag && !request.getBarberId().equals(appointmentEntity.getBarber().getId())) {
-                    Optional<BarberEntity> barberEntity = barberService.findById(request.getBarberId());
-                    if (barberEntity.isPresent()) {
-                        appointmentEntity.setBarber(barberEntity.get());
-                    } else {
-                        flag = false;
+                    if (flag && !request.getBarberId().equals(appointmentEntity.getBarber().getId())) {
+                        Optional<BarberEntity> barberEntity = barberService.findById(request.getBarberId());
+                        if (barberEntity.isPresent()) {
+                            appointmentEntity.setBarber(barberEntity.get());
+                        } else {
+                            flag = false;
+                        }
                     }
-                }
 
-                if (flag) {
-                    service.save(appointmentEntity);
+                    if (flag) {
+                        service.save(appointmentEntity);
 
-                    response.setSuccessful(true);
-                    response.setMessage("Cita actualizada exitosamente.");
-                } else {
-                    response.setMessage("El cliente o barbero asignados no existe en el sistema.");
+                        response.setSuccessful(true);
+                        response.setMessage("Cita actualizada exitosamente.");
+                    } else {
+                        response.setMessage("El cliente o barbero asignados no existe en el sistema.");
+                    }
+                } catch (ParseException e) {
+                    response.setMessage("El formato de la fecha es incorrecto");
                 }
             } else {
                 response.setMessage("La cita que se desea editar no existe.");
