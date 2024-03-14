@@ -1,7 +1,5 @@
 package meso.itrjwyss.barberia.data.appointment;
 
-import java.util.List;
-
 public class UpdateAppointmentRequest {
 
     private Long id;
@@ -11,7 +9,6 @@ public class UpdateAppointmentRequest {
     private String hourEnd;
     private Long customerId;
     private Long barberId;
-    private List<AppointmentServiceData> serviceDataList;
 
     public boolean isValid() {
         return (
@@ -79,13 +76,5 @@ public class UpdateAppointmentRequest {
 
     public void setBarberId(Long barberId) {
         this.barberId = barberId;
-    }
-
-    public List<AppointmentServiceData> getServiceDataList() {
-        return serviceDataList;
-    }
-
-    public void setServiceDataList(List<AppointmentServiceData> serviceDataList) {
-        this.serviceDataList = serviceDataList;
     }
 }
