@@ -2,7 +2,6 @@ package meso.itrjwyss.barberia.controllers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -131,9 +130,9 @@ public class AppointmentController {
             Optional<BarberEntity> barberSearch = barberService.findById(request.getBarberId());
 
             if (customerSearch.isPresent() && barberSearch.isPresent()) {
-                try {
-                    AppointmentEntity appointmentEntity = new AppointmentEntity();
+                AppointmentEntity appointmentEntity = new AppointmentEntity();
 
+                try {
                     SimpleDateFormat formatDay = new SimpleDateFormat("yyyy-MM-dd");
                     SimpleDateFormat formatHour = new SimpleDateFormat("HH:mm");
 
@@ -166,7 +165,6 @@ public class AppointmentController {
                     } else {
                         response.setMessage("Alguno de los servicios asignados a la cita no existe en el sistema");
                     }
-
                 } catch (ParseException e) {
                     response.setMessage("El formato de la fecha es incorrecto");
                 }

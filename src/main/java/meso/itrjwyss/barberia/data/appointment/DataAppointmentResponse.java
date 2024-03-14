@@ -2,7 +2,6 @@ package meso.itrjwyss.barberia.data.appointment;
 
 import java.util.ArrayList;
 import java.util.List;
-import meso.itrjwyss.barberia.data.BaseResponse;
 import meso.itrjwyss.barberia.data.ListData;
 
 public class DataAppointmentResponse {
