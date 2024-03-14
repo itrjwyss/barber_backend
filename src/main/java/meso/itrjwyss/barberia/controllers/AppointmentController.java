@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import meso.itrjwyss.barberia.data.BaseResponse;
+import meso.itrjwyss.barberia.data.ListData;
 import meso.itrjwyss.barberia.data.appointment.AppointmentData;
 import meso.itrjwyss.barberia.data.appointment.AppointmentServiceData;
 import meso.itrjwyss.barberia.data.appointment.CreateAppointmentRequest;
@@ -96,6 +97,25 @@ public class AppointmentController {
     @GetMapping("/data")
     public DataAppointmentResponse data() {
         DataAppointmentResponse response = new DataAppointmentResponse();
+
+        List<ListData> barbers =  new ArrayList<>();
+        barberService.findAll().forEach(barberEntity ->
+            barbers.add(new ListData(barberEntity.getId(), barberEntity.getName()))
+        );
+
+        List<ListData> customers = new ArrayList<>();
+        customerService.findAll().forEach(customerEntity ->
+            customers.add(new ListData(customerEntity.getId(), customerEntity.getName()))
+        );
+
+        List<ListData> services = new ArrayList<>();
+        serviceService.findAll().forEach(serviceEntity ->
+            services.add(new ListData(serviceEntity.getId(), serviceEntity.getName()))
+        );
+
+        response.setBarbers(barbers);
+        response.setCustomers(customers);
+        response.setServices(services);
 
         return response;
     }
