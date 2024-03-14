@@ -7,9 +7,9 @@ import java.util.Objects;
 
 public class CreateAppointmentRequest {
 
-    private Date day;
-    private Date hourStart;
-    private Date hourEnd;
+    private String day;
+    private String hourStart;
+    private String hourEnd;
     private Long customerId;
     private Long barberId;
     private List<Long> serviceIdList;
@@ -18,27 +18,27 @@ public class CreateAppointmentRequest {
         return (day != null && hourStart != null && hourEnd != null && customerId != null && barberId != null);
     }
 
-    public Date getDay() {
+    public String getDay() {
         return day;
     }
 
-    public void setDay(Date day) {
+    public void setDay(String day) {
         this.day = day;
     }
 
-    public Date getHourStart() {
+    public String getHourStart() {
         return hourStart;
     }
 
-    public void setHourStart(Date hourStart) {
+    public void setHourStart(String hourStart) {
         this.hourStart = hourStart;
     }
 
-    public Date getHourEnd() {
+    public String getHourEnd() {
         return hourEnd;
     }
 
-    public void setHourEnd(Date hourEnd) {
+    public void setHourEnd(String hourEnd) {
         this.hourEnd = hourEnd;
     }
 

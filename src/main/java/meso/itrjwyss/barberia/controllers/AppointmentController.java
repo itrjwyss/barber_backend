@@ -1,5 +1,8 @@
 package meso.itrjwyss.barberia.controllers;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,6 +11,7 @@ import meso.itrjwyss.barberia.data.BaseResponse;
 import meso.itrjwyss.barberia.data.appointment.AppointmentData;
 import meso.itrjwyss.barberia.data.appointment.AppointmentServiceData;
 import meso.itrjwyss.barberia.data.appointment.CreateAppointmentRequest;
+import meso.itrjwyss.barberia.data.appointment.DataAppointmentResponse;
 import meso.itrjwyss.barberia.data.appointment.FindAppointmentResponse;
 import meso.itrjwyss.barberia.entities.AppointmentEntity;
 import meso.itrjwyss.barberia.entities.AppointmentServiceEntity;
@@ -19,6 +23,7 @@ import meso.itrjwyss.barberia.services.AppointmentServiceService;
 import meso.itrjwyss.barberia.services.BarberService;
 import meso.itrjwyss.barberia.services.CustomerService;
 import meso.itrjwyss.barberia.services.ServiceService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/appointment")
 public class AppointmentController {
 
@@ -87,6 +93,13 @@ public class AppointmentController {
         return response;
     }
 
+    @GetMapping("/data")
+    public DataAppointmentResponse data() {
+        DataAppointmentResponse response = new DataAppointmentResponse();
+
+        return response;
+    }
+
     @PostMapping("/created")
     public BaseResponse create(
         @RequestBody CreateAppointmentRequest request
@@ -98,33 +111,44 @@ public class AppointmentController {
             Optional<BarberEntity> barberSearch = barberService.findById(request.getBarberId());
 
             if (customerSearch.isPresent() && barberSearch.isPresent()) {
-                AppointmentEntity appointmentEntity = new AppointmentEntity();
+                try {
+                    AppointmentEntity appointmentEntity = new AppointmentEntity();
 
-                appointmentEntity.setDay(request.getDay());
-                appointmentEntity.setHourStart(request.getHourStart());
-                appointmentEntity.setHourEnd(request.getHourEnd());
-                appointmentEntity.setCustomer(customerSearch.get());
-                appointmentEntity.setBarber(barberSearch.get());
+                    SimpleDateFormat formatDay = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat formatHour = new SimpleDateFormat("HH:mm");
 
-                final boolean[] flag = {true};
-                request.getServiceIdList().forEach(serviceId -> {
-                    Optional<ServiceEntity> tempService = serviceService.findById(serviceId);
-                    if (tempService.isPresent()) {
-                        AppointmentServiceEntity tempAppointmentService = new AppointmentServiceEntity();
+                    appointmentEntity.setDay(formatDay.parse(request.getDay()));
+                    appointmentEntity.setHourStart(formatHour.parse(request.getHourStart()));
+                    appointmentEntity.setHourEnd(formatHour.parse(request.getHourEnd()));
+                    appointmentEntity.setCustomer(customerSearch.get());
+                    appointmentEntity.setBarber(barberSearch.get());
 
-                        tempAppointmentService.setAppointment(appointmentEntity);
-                        tempAppointmentService.setService(tempService.get());
+                    final boolean[] flag = {true};
+                    request.getServiceIdList().forEach(serviceId -> {
+                        Optional<ServiceEntity> tempService = serviceService.findById(serviceId);
+                        if (tempService.isPresent()) {
+                            AppointmentServiceEntity tempAppointmentService = new AppointmentServiceEntity();
 
-                        appointmentEntity.addService(tempAppointmentService);
+                            tempAppointmentService.setAppointment(appointmentEntity);
+                            tempAppointmentService.setService(tempService.get());
+
+                            appointmentEntity.addService(tempAppointmentService);
+                        } else {
+                            flag[0] = false;
+                        }
+                    });
+
+                    if (flag[0]) {
+                        service.save(appointmentEntity);
+
+                        response.setSuccessful(true);
+                        response.setMessage("Cita creada exitosamente.");
                     } else {
-                        flag[0] = false;
+                        response.setMessage("Alguno de los servicios asignados a la cita no existe en el sistema");
                     }
-                });
 
-                if (flag[0]) {
-                    service.save(appointmentEntity);
-                } else {
-                    response.setMessage("Alguno de los servicios asignados a la cita no existe en el sistema");
+                } catch (ParseException e) {
+                    response.setMessage("El formato de la fecha es incorrecto");
                 }
             } else {
                 response.setMessage("El cliente o barbero asignados no existe en el sistema.");
